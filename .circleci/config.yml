@@ -19,7 +19,7 @@ jobs:
       - run:
           name: Build using `docker-compose`
           command: |
-            docker-compose -f docker-compose-build.yml build --parallel
+            docker-compose -f docker-compose-build.yml build
       - run:
           name: Login for Docker Hub
           command: |
