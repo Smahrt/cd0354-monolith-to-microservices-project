@@ -5,28 +5,43 @@ jobs:
       - image: "cimg/node:14.17.0"
     steps:
       - checkout
+      # - run:
+      #     name: Install Docker Compose
+      #     environment:
+      #       COMPOSE_VERSION: "1.29.2"
+      #     command: |
+      #       curl -L "https://github.com/docker/compose/releases/download/${COMPOSE_VERSION}/docker-compose-$(uname -s)-$(uname -m)" -o ~/docker-compose
+      #       chmod +x ~/docker-compose
+      #       sudo mv ~/docker-compose /usr/local/bin/docker-compose
+      # - setup_remote_docker:
+      #     docker_layer_caching: false
+      # - run:
+      #     name: Build using `docker-compose`
+      #     command: |
+      #       docker-compose -f docker-compose-build.yml build --parallel
       - run:
-          name: Install dependencies
-          command: npm install
-      - run:
-          name: Install Docker Compose
-          environment:
-            COMPOSE_VERSION: "1.29.2"
+          name: Build Images
           command: |
-            curl -L "https://github.com/docker/compose/releases/download/${COMPOSE_VERSION}/docker-compose-$(uname -s)-$(uname -m)" -o ~/docker-compose
-            chmod +x ~/docker-compose
-            sudo mv ~/docker-compose /usr/local/bin/docker-compose
-      - setup_remote_docker:
-          docker_layer_caching: false
+            docker build -t udagram-api-feed ./udagram-api-feed
+            docker build -t udagram-api-user ./udagram-api-user
+            docker build -t udagram-frontend ./udagram-frontend
+            docker build -t reverseproxy ./reverseproxy
       - run:
-          name: Build using `docker-compose`
+          name: Tag Images
           command: |
-            docker-compose -f docker-compose-build.yml build --parallel
+            docker tag udagram-api-feed:latest kubiat/udagram-api-feed:v1
+            docker tag udagram-api-user:latest kubiat/udagram-api-user:v1
+            docker tag udagram-frontend:local kubiat/udagram-frontend:v1
+            docker tag reverseproxy:latest kubiat/reverseproxy:v1
       - run:
-          name: Login for Docker Hub
+          name: Push Images to Docker Hub
           command: |
-            echo "$DOCKER_PASSWORD" | docker login --username $DOCKER_USERNAME --password-stdin
-      - run:
-          name: Push to Docker Hub
-          command: |
-            docker-compose push
+            echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+            docker push kubiat/udagram-api-feed:v1
+            docker push kubiat/udagram-api-user:v1
+            docker push kubiat/udagram-frontend:v1
+            docker push kubiat/reverseproxy:v1
+      # - run:
+      #     name: Push to Docker Hub
+      #     command: |
+      #       docker-compose push
