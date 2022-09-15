@@ -2,7 +2,7 @@ services:
   reverseproxy:
     build:
       context: ./udagram-reverseproxy
-    image: reverseproxy:kubiat/reverseproxy:v1
+    image: reverseproxy
   backend_user:
     build:
       context: ./udagram-api-user
