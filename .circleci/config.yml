@@ -31,7 +31,7 @@ jobs:
           command: |
             docker tag udagram-api-feed:latest kubiat/udagram-api-feed:v1
             docker tag udagram-api-user:latest kubiat/udagram-api-user:v1
-            docker tag udagram-frontend:local kubiat/udagram-frontend:v1
+            docker tag udagram-frontend:latest kubiat/udagram-frontend:v1
             docker tag reverseproxy:latest kubiat/reverseproxy:v1
       - run:
           name: Push Images to Docker Hub
